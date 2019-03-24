@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="default.css">
+</head>
+<body>
+<div class="container">
+  <div class="table">
+    <table>
+      <tr>
+        <th>Parameter</th>
+        <td><select id="para-select"></select></td>
+      </tr>
+      <tr>
+        <th>Speed</th>
+        <td>
+          <input type="number" id="speed">
+          <p>Specify the speed in seconds. Default: 1s</p>
+        </td>
+      </tr>
+      <tr>
+        <th>Show Parameter Name</th>
+        <td>
+          <select id="show-para-name">
+            <option value="n" selected="selected">No</option>
+            <option value="y">Yes</option>
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <th>Show Speed</th>
+        <td>
+          <select id="show-speed">
+            <option value="n" selected="selected">No</option>
+            <option value="y">Yes</option>
+          </select>
+        </td>
+      </tr>
+    </table>
+  </div>
+  <div class="submit-box">
+    <input type="button" id="cancel-button" value="Cancel">
+    <span class="space"></span>
+    <input type="button" id="ok-button" value="OK">
+  </div>
+</div>
+<script src="../lib/tableau-extensions-1.latest.min.js"></script>
+<script src="./config.js"></script>
+</body>
+</html>
