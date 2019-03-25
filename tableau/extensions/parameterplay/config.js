@@ -114,6 +114,7 @@ let parameterDict = {};
       let showSpeed = document.getElementById('show-speed').value;
       if (isNaN(speed)) { speed = 1; }
 
+      tableau.extensions.settings.set('configured', 'true');
       tableau.extensions.settings.set('para-id', pid);
       tableau.extensions.settings.set('speed', speed);
       tableau.extensions.settings.set('show-para-name', showParaName);

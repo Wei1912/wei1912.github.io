@@ -3,7 +3,12 @@
 (function () {
   let playTimer;
   tableau.extensions.initializeAsync({'configure': configure}).then(function () {
-    showDetail();
+    const settings = window.tableau.extensions.settings.getAll();
+    if (settings.configured !== 'true') {
+        configure();
+    } else {
+        updatePage(settings);
+    }
     document.getElementById('play-button').addEventListener('click', onClickPlayButton);
   });
 
@@ -11,9 +16,15 @@
     let currentUrl = location.href;
     let url = currentUrl.substring(0, currentUrl.lastIndexOf('/')) + '/config.html';
     tableau.extensions.ui.displayDialogAsync(url,'',{ height: 400, width: 500 }).then((closePayload) => {
-      showDetail();
+      updatePage(window.tableau.extensions.settings.getAll());
     }).catch((err) => {
-      console.log('Error while configuring: ' + err.toString());
+      switch (err.errorCode) {
+        case tableau.ErrorCodes.DialogClosedByUser:
+          console.log("Dialog was closed by user.");
+          break;
+        default:
+          console.error('Error while configuring: ' + err.toString());
+      }
     });
   }
 
@@ -65,11 +76,11 @@
     });
   }
 
-  function showDetail() {
-    let pid = tableau.extensions.settings.get('para-id');
-    let speed = tableau.extensions.settings.get('speed');
-    let showParaName = tableau.extensions.settings.get('show-para-name');
-    let showSpeed = tableau.extensions.settings.get('show-speed');
+  function updatePage(settings) {
+    let pid = settings['para-id'];
+    let speed = settings['speed'];
+    let showParaName = settings['show-para-name'];
+    let showSpeed = settings['show-speed'];
 
     let settingsDetail = document.getElementById('settings-detail');
     while (settingsDetail.firstChild) {
