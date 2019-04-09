@@ -7,6 +7,7 @@ body {
 .container { width: 100%; margin: auto; }
 input[type=checkbox] { transform: scale(1.5); border: 1px solid #eeeeee; }
 select { transform: scale(1, 1.2); border: 1px solid #eeeeee; }
+.no-scrollbar { overflow: hidden; }
 
 /* table */
 .table table {

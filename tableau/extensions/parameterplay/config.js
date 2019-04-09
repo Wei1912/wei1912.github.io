@@ -59,6 +59,8 @@ let parameterDict = {};
       let pid = parameterSelect.value;
       let parameter = parameterDict[pid];
 
+      console.log(parameter);
+
       let detailDict = {};
       detailDict['Data Type'] = parameter.dataType;
       detailDict['Current Value'] = parameter.currentValue.formattedValue;
@@ -71,12 +73,17 @@ let parameterDict = {};
             break;
           case tableau.ParameterValueType.List:
             let values = dr.allowableValues;
-            minValue = values[0].value;
-            maxValue = values[values.length - 1].value;
+            minValue = values[0].formattedValue;
+            maxValue = values[values.length - 1].formattedValue;
             break;
           case tableau.ParameterValueType.Range:
-            minValue = dr.minValue.value;
-            maxValue = dr.maxValue.value;
+            minValue = dr.minValue.formattedValue;
+            maxValue = dr.maxValue.formattedValue;
+            detailDict['Step Size'] = dr.stepSize;
+            if (parameter.dataType === tableau.DataType.DateTime ||
+              parameter.dataType === tableau.DataType.Date) {
+              detailDict['Date Step Period'] = dr.dateStepPeriod;
+            }
         }
         if (minValue && maxValue) {
           detailDict['Value'] = '' + minValue + '<br>~<br>' + maxValue;
