@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Install Dns On Ubuntu18.04</title>
+        <link rel="stylesheet" href="/assets/css/styles.css">
+        <link type="application/atom+xml" rel="alternate" href="http://localhost:4000/feed.xml" />
+        <!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Install Dns On Ubuntu18.04</title>
+<meta name="generator" content="Jekyll v3.8.6" />
+<meta property="og:title" content="Install Dns On Ubuntu18.04" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="如何在 Ubuntu 18.04 安装 域名服务器" />
+<meta property="og:description" content="如何在 Ubuntu 18.04 安装 域名服务器" />
+<link rel="canonical" href="http://localhost:4000/2020/01/19/install-dns-on-ubuntu18.04.html" />
+<meta property="og:url" content="http://localhost:4000/2020/01/19/install-dns-on-ubuntu18.04.html" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-01-19T00:00:00+09:00" />
+<script type="application/ld+json">
+{"datePublished":"2020-01-19T00:00:00+09:00","dateModified":"2020-01-19T00:00:00+09:00","url":"http://localhost:4000/2020/01/19/install-dns-on-ubuntu18.04.html","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/2020/01/19/install-dns-on-ubuntu18.04.html"},"description":"如何在 Ubuntu 18.04 安装 域名服务器","@type":"BlogPosting","headline":"Install Dns On Ubuntu18.04","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+    </head>
+    <body>
+        <h1>Install Dns On Ubuntu18.04</h1>
+<p>
+    19 Jan 2020
+</p>
+
+<h1 id="如何在-ubuntu-1804-安装-域名服务器">如何在 Ubuntu 18.04 安装 域名服务器</h1>
+
+<p>通常我们访问某个网站，是在浏览器中输入这个网站的域名，比如 https://www.google.com/ ，但是在网络中，计算机需要知道其 IP 才可以通信。而域名服务器（Name server）可以进行 域名 和 IP 的转换。<br />
+接下来介绍如何在 Ubuntu 18.04 中安装 BIND9。BIND9 是 BIND 的当前最新版本，而 BIND 是最常使用的 DNS 软件。</p>
+
+<h2 id="安装和配置-bind9">安装和配置 BIND9</h2>
+<h3 id="更新系统">更新系统</h3>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>apt update
+</code></pre></div></div>
+<h3 id="安装-bind9">安装 BIND9</h3>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>apt <span class="nb">install </span>bind9
+</code></pre></div></div>
+<p>输入 y 继续安装。</p>
+<h3 id="配置-bind9">配置 BIND9</h3>
+<p>假设除域名服务器之外我们还有两台电脑，也是安装 Ubuntu 18.04 系统。两台电脑的 IP 分别是<br />
+  电脑A: 192.168.56.10<br />
+  电脑B: 192.168.56.11</p>
+
+<p>现在我想给它们分别赋予如下的域名，<br />
+  电脑A: app1.sample.com<br />
+  电脑B: app2.sample.com<br />
+域名可以随意指定，这里以 sample.com 作为例子。app1 和 app2 是主机名。</p>
+<h4 id="1-配置-namedconfoptions">1. 配置 named.conf.options</h4>
+
+<p>BIND9 的配置文件在 /etc/bind<br />
+所以我们先 cd 到这个目录</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">cd</span> /etc/bind
+</code></pre></div></div>
+<p>ls 这个目录会看到文件 named.conf.options\
+用你喜欢的编辑器打开这个文件，比如说</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>vi named.conf.options
+</code></pre></div></div>
+<p>把下面这些设定加入到这个配置文件</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>listen-on <span class="o">{</span> localhost<span class="p">;</span> 192.168.56.3<span class="p">;</span> <span class="o">}</span><span class="p">;</span>
+allow-transfer <span class="o">{</span> none<span class="p">;</span> <span class="o">}</span><span class="p">;</span>
+</code></pre></div></div>
+<p>192.168.56.3 是本机（域名服务器）的 IP 地址，BIND9 会监听本机的 53 端口，包括 127.0.0.1:53 和 192.168.56.3:53, 53 是 DNS 服务的默认端口。<br />
+由于我们只有一台域名服务器，没有同步的必要，所以将 allow-transfer 设置为 none。<br />
+编辑之后的样子：</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>options <span class="o">{</span>
+        directory <span class="s2">"/var/cache/bind"</span><span class="p">;</span>
+
+        listen-on <span class="o">{</span> localhost<span class="p">;</span> 192.168.56.3<span class="p">;</span> <span class="o">}</span><span class="p">;</span>
+        allow-transfer <span class="o">{</span> none<span class="p">;</span> <span class="o">}</span><span class="p">;</span>
+        
+        // 以下默认设置
+        dnssec-validation auto<span class="p">;</span>
+
+        auth-nxdomain no<span class="p">;</span>    <span class="c"># conform to RFC1035</span>
+        listen-on-v6 <span class="o">{</span> any<span class="p">;</span> <span class="o">}</span><span class="p">;</span>
+<span class="o">}</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h4 id="2-配置-zone">2. 配置 zone</h4>
+
+<p>打开文件 named.conf.local，加入以下设定。</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>zone <span class="s2">"sample.com"</span> <span class="o">{</span>
+        <span class="nb">type </span>master<span class="p">;</span>
+        file <span class="s2">"/etc/bind/zones/db.sample.com"</span><span class="p">;</span>
+<span class="o">}</span><span class="p">;</span>
+
+zone <span class="s2">"56.168.192.in-addr.arpa"</span> <span class="o">{</span>
+        <span class="nb">type </span>master<span class="p">;</span>
+        file <span class="s2">"/etc/bind/zones/db.56.168.192"</span><span class="p">;</span>
+<span class="o">}</span><span class="p">;</span>
+</code></pre></div></div>
+<p>注意最后的 ; 是必须的。
+zone “sample.com” 是正向解析用 zone 配置，解析用的数据存储于 /etc/bind/zones/db.sample.com 文件。<br />
+sample.com 是域名，我们将在 db.sample.com 文件加入所有主机和对应的IP信息。</p>
+
+<p>zone “56.168.192.in-addr.arpa” 是反向解析用 zone 配置，我们假设我们的网络号是 192.168.56，注意这里要将其反过来写成 56.168.192.in-addr.arpa。in-addr.arpa 表示这是用于反向解析。解析用的数据存储于 /etc/bind/zones/db.56.168.192 文件。</p>
+
+<h4 id="3-正向解析-zone-文件">3. 正向解析 zone 文件</h4>
+
+<p>在 /etc/bind 目录下新建 zones 文件夹。<br />
+将 /etc/bind/db.empty 文件复制到 zones 文件夹，并重命名为 db.sample.com<br />
+编辑 db.sample.com 文件：</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$TTL</span>    86400
+@       IN      SOA     ns.sample.com. admin.sample.com. <span class="o">(</span>
+                              1         <span class="p">;</span> Serial
+                         604800         <span class="p">;</span> Refresh
+                          86400         <span class="p">;</span> Retry
+                        2419200         <span class="p">;</span> Expire
+                          86400 <span class="o">)</span>       <span class="p">;</span> Negative Cache TTL
+<span class="p">;</span> name servers - NS records
+        IN      NS      ns.sample.com.
+
+<span class="p">;</span> name servers - A records
+ns.sample.com.  IN      A       192.168.56.3
+
+<span class="p">;</span> A records
+app1    IN      A       192.168.56.10
+app2    IN      A       192.168.56.11
+</code></pre></div></div>
+
+<h4 id="4-反向解析-zone-文件">4. 反向解析 zone 文件</h4>
+
+<p>将 /etc/bind/db.empty 文件再次复制到 zones 文件夹，并重命名为 db.56.168.192<br />
+编辑 db.56.168.192 文件：</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$TTL</span>    86400
+@       IN      SOA     ns.sample.com. admin.sample.com. <span class="o">(</span>
+                              1         <span class="p">;</span> Serial
+                         604800         <span class="p">;</span> Refresh
+                          86400         <span class="p">;</span> Retry
+                        2419200         <span class="p">;</span> Expire
+                          86400 <span class="o">)</span>       <span class="p">;</span> Negative Cache TTL
+<span class="p">;</span> Name servers - NS records
+        IN      NS      ns.sample.com.
+
+<span class="p">;</span> Name servers - PTR records
+3       IN      PTR     ns.sample.com.
+
+<span class="p">;</span> PTR records
+10      IN      PTR     app1.sample.com.
+11      IN      PTR     app2.sample.com.
+</code></pre></div></div>
+<p>注意，如果你的网络号是 192.168，那么在 PTR 记录中，应当使用 10.56 这样的记录方式，就是将 IP 反过来。</p>
+
+<h4 id="5-检查配置">5. 检查配置</h4>
+
+<p>运行以下命令来检查 BIND9 配置文件。</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>named-checkconf
+</code></pre></div></div>
+<p>如果配置有错误，该命令会提示错误信息。</p>
+
+<p>运行以下命令检查正向解析 zone 文件配置。</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>named-checkzone sample.com /etc/bind/zones/db.sample.com
+</code></pre></div></div>
+<p>named-checkzone 命令后跟两个参数，第一个是检查对象 zone 的名字，第二个是其 zone 文件。</p>
+
+<p>运行以下命令检查反向解析 zone 文件配置。</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>named-checkzone 56.168.192.in-addr.arpa /etc/bind/zones/db.56.168.192
+</code></pre></div></div>
+
+<p>检查都通过的话那么配置就完成了。</p>
+
+<h3 id="重起-bind9">重起 BIND9</h3>
+<p>在我们安装完 BIND9 后，BIND9 就启动了。<br />
+运行以下命令重起 BIND9 服务，以使配置生效。</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>systemctl restart bind9
+</code></pre></div></div>
+<p>我们可以运行以下命令来查看当前 BIND9 的运行状态。</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>systemctl status bind9
+</code></pre></div></div>
+
+<h3 id="检验效果">检验效果</h3>
+<p>通常使用 nslookup 命令来查询DNS记录。<br />
+nslookup 后跟域名的时候，查询 A 记录，输出域名对应的 IP。<br />
+后跟 IP 的时候，查询 PTR 记录，输出 IP 对应的域名。<br />
+nslookup 还可以指定域名服务器。如果不指定的话，将使用系统的域名服务器。</p>
+
+<p>登陆到电脑A，输入以下命令</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>nslookup app2.sample.com
+</code></pre></div></div>
+<p>由于我们还没有更改 电脑A 的系统域名服务器，所以上面的命令并不能给出正确的结果。<br />
+接下来运行命令 nslookup app2.sample.com 192.168.56.3</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>xxx@app1:~<span class="nv">$ </span>nslookup app2.sample.com 192.168.56.3
+Server:		192.168.56.3
+Address:	192.168.56.3#53
+
+Name:	app2.sample.com
+Address: 192.168.56.11
+</code></pre></div></div>
+<p>可以看到，nslookup 向 192.168.56.3 查询 app2.sample.com 的DNS信息并给出了正确的 IP 地址。<br />
+我们也可以查询 PTR 信息。</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>xxx@app1:~<span class="nv">$ </span>nslookup 192.168.56.10 192.168.56.3
+10.56.168.192.in-addr.arpa	name <span class="o">=</span> app1.sample.com.
+</code></pre></div></div>
+
+<h3 id="更改系统域名服务器设定">更改系统域名服务器设定</h3>
+<p>配置完域名服务器后，需要在其它的机器上设置DNS服务器信息，这样别的机器才可以使用配置完成的域名服务器的服务。<br />
+在电脑A，打开 /etc/netplan 目录下的配置文件，我是在 VirtualBox 上配置的虚拟机，所以配置文件是 50-cloud-init.yaml<br />
+将域名服务器信息添加到对应的网卡即可。<br />
+<img src="/assets/images/install-dns-on-ubuntu18.04-01.png" alt="name server setting" width="600px" /></p>
+
+<p>运行 sudo netplan apply 使设定生效。
+这时候再执行 nslookup app2.sample.com ，就可以得到想要的结果了。</p>
+
+<p>END</p>
+
+
+    </body>
+</html>
