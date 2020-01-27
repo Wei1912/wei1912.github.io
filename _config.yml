@@ -1,9 +1,11 @@
-theme: jekyll-theme-dinky
+theme: jekyll-theme-slate
 
 plugins:
   - jekyll-feed
   - jekyll-sitemap
   - jekyll-seo-tag
+
+show_downloads: false
 
 defaults:
   - scope:

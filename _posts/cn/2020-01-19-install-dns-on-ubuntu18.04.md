@@ -1,14 +1,15 @@
-# 如何在 Ubuntu 18.04 安装 域名服务器
-
-通常我们访问某个网站，是在浏览器中输入这个网站的域名，比如 https://www.google.com/ ，但是在网络中，计算机需要知道其 IP 才可以通信。而域名服务器（Name server）可以进行 域名 和 IP 的转换。  
-接下来介绍如何在 Ubuntu 18.04 中安装 BIND9。BIND9 是 BIND 的当前最新版本，而 BIND 是最常使用的 DNS 软件。
+---
+title: 如何在 Ubuntu 18.04 安装 域名服务器
+---
+通常我们访问某个网站，是在浏览器中输入这个网站的域名，比如 https://www.google.com/ 但是在网络中，计算机需要知道其 IP 才可以通信。而域名服务器（Name server）可以进行 域名 和 IP 的转换。接下来介绍如何在 Ubuntu 18.04 中安装 BIND9。BIND9 是 BIND 的当前最新版本，而 BIND 是最常使用的 DNS 软件。
 
 ## 安装和配置 BIND9
-### 更新系统
+### 安装 BIND9
+#### 1. 更新系统
 ```bash
 sudo apt update
 ```
-### 安装 BIND9
+#### 2. 安装 BIND9
 ```bash
 sudo apt install bind9
 ```
@@ -193,4 +194,4 @@ xxx@app1:~$ nslookup 192.168.56.10 192.168.56.3
 运行 sudo netplan apply 使设定生效。
 这时候再执行 nslookup app2.sample.com ，就可以得到想要的结果了。  
 
-END
+&lt;END&gt;
