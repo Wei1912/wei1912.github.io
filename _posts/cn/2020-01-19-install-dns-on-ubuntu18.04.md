@@ -1,5 +1,5 @@
 ---
-title: 如何在 Ubuntu 18.04 安装 域名服务器
+title: 在 Ubuntu 18.04 安装 域名服务器（DNS）
 ---
 通常我们访问某个网站，是在浏览器中输入这个网站的域名，比如 https://www.google.com/ 但是在网络中，计算机需要知道其 IP 才可以通信。而域名服务器（Name server）可以进行 域名 和 IP 的转换。接下来介绍如何在 Ubuntu 18.04 中安装 BIND9。BIND9 是 BIND 的当前最新版本，而 BIND 是最常使用的 DNS 软件。
 
@@ -158,7 +158,7 @@ sudo systemctl restart bind9
 sudo systemctl status bind9
 ```
 
-### 检验效果
+## 检验效果
 通常使用 nslookup 命令来查询DNS记录。  
 nslookup 后跟域名的时候，查询 A 记录，输出域名对应的 IP。  
 后跟 IP 的时候，查询 PTR 记录，输出 IP 对应的域名。  
@@ -185,7 +185,7 @@ xxx@app1:~$ nslookup 192.168.56.10 192.168.56.3
 10.56.168.192.in-addr.arpa	name = app1.sample.com.
 ```
 
-### 更改系统域名服务器设定
+## 更改系统域名服务器设定
 配置完域名服务器后，需要在其它的机器上设置DNS服务器信息，这样别的机器才可以使用配置完成的域名服务器的服务。  
 在电脑A，打开 /etc/netplan 目录下的配置文件，我是在 VirtualBox 上配置的虚拟机，所以配置文件是 50-cloud-init.yaml  
 将域名服务器信息添加到对应的网卡即可。  
