@@ -83,7 +83,7 @@ $ sudo netplan apply
 ```
 <br>
 注意，在 enp0s8 中不要设置网关，比如 gateway4: 192.168.56.1  
-如果设置了网关就会导致 NAT 网络接口无法正常连接外部网络。这应该是 Ubuntu 或者 VirtualBox 的一个 Bug。
+如果设置了网关就会导致 NAT 网络接口无法正常连接外部网络。这可能是 netplan，Ubuntu 或者 VirtualBox 的一个 Bug。
 参看
 <a href="https://askubuntu.com/questions/984445/netplan-configuration-on-ubuntu-17-04-virtual-machine" target="_blank">netplan configuration on Ubuntu 17.04 virtual machine</a>
 
