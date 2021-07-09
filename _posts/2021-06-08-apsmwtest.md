@@ -4,8 +4,6 @@ title: APS Managed Web integration test
 
 APS Managed Web integration test
 
-<script data-ad-client="ca-pub-8556387711071199" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-
 <script async='async' src='https://www.googletagservices.com/tag/js/gpt.js'></script>
 <script>
     var googletag = googletag || {};
